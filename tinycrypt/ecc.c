@@ -430,7 +430,7 @@ bitcount_t uECC_vli_numBits(const uECC_word_t *vli)
 
 	digit = vli[num_digits - 1];
 #if defined __GNUC__ || defined __clang__ || defined __CC_ARM
-	i = uECC_WORD_BITS - __builtin_clz(digit);
+	i = (digit == 0)? 0 : uECC_WORD_BITS - __builtin_clz(digit);
 #else
 	for (i = 0; digit; ++i) {
 		digit >>= 1;
