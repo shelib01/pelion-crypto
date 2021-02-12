@@ -1836,6 +1836,32 @@ component_test_baremetal () {
     fi
 }
 
+component_test_platform_fault () {
+    msg "build: default config + platform fault"
+    scripts/config.pl set MBEDTLS_PLATFORM_FAULT_CALLBACKS
+    make TEST_FAULT=1
+
+    msg "test: default config + platform fault"
+    if_build_succeeded make test
+}
+
+component_test_platform_fault_ood () {
+    msg "build fault object out of directory"
+    scripts/config.pl set MBEDTLS_PLATFORM_FAULT_CALLBACKS
+    cd ./tests/data_files
+    gcc -c platform_fault.c -o platform_fault.o
+    cd ../../
+    mkdir ood_platform_fault
+    cp -rf ./tests/data_files/platform_fault.* ./ood_platform_fault
+
+    msg "build: default config + platform fault out of directory"
+    make TEST_FAULT=1 FAULT_OBJ="../ood_platform_fault/platform_fault.o" PROG_FAULT_OBJ="../ood_platform_fault/platform_fault.o" CFLAGS="-I$(pwd)/ood_platform_fault"
+
+    msg "test: default config + platform fault out of directory"
+    if_build_succeeded make test
+    rm -rf ./ood_platform_fault
+}
+
 component_test_hardware_entropy () {
     msg "build: default config + MBEDTLS_ENTROPY_HARDWARE_ALT"
     scripts/config.pl set MBEDTLS_ENTROPY_HARDWARE_ALT

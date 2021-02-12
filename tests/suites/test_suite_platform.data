@@ -1,0 +1,3 @@
+Check platform fault failure
+depends_on:MBEDTLS_PLATFORM_FAULT_CALLBACKS
+platform_fault:
