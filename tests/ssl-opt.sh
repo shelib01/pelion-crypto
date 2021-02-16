@@ -7385,17 +7385,17 @@ run_test    "DTLS cookie: default (failing)" \
             -C "received hello verify request" \
             -S "hello verification requested"
 
-#requires_ipv6
-#run_test    "DTLS cookie: enabled, IPv6" \
-#            "$P_SRV dtls=1 debug_level=2 server_addr=::1" \
-#            "$P_CLI dtls=1 debug_level=2 server_addr=::1" \
-#            0 \
-#            -s "cookie verification failed" \
-#            -s "cookie verification passed" \
-#            -S "cookie verification skipped" \
-#            -c "received hello verify request" \
-#            -s "hello verification requested" \
-#            -S "SSL - The requested feature is not available"
+requires_ipv6
+run_test    "DTLS cookie: enabled, IPv6" \
+            "$P_SRV dtls=1 debug_level=2 server_addr=::1" \
+            "$P_CLI dtls=1 debug_level=2 server_addr=::1" \
+            0 \
+            -s "cookie verification failed" \
+            -s "cookie verification passed" \
+            -S "cookie verification skipped" \
+            -c "received hello verify request" \
+            -s "hello verification requested" \
+            -S "SSL - The requested feature is not available"
 
 run_test    "DTLS cookie: enabled, nbio" \
             "$P_SRV dtls=1 nbio=2 debug_level=2" \
