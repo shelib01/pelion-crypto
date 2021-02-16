@@ -4228,7 +4228,7 @@ static int ssl_parse_new_session_ticket( mbedtls_ssl_context *ssl )
  */
 int mbedtls_ssl_handshake_client_step( mbedtls_ssl_context *ssl )
 {
-    int ret = MBEDTLS_ERR_PLATFORM_FAULT_DETECTED;
+    volatile int ret = MBEDTLS_ERR_PLATFORM_FAULT_DETECTED;
 #if defined(MBEDTLS_SSL_DELAYED_SERVER_CERT_VERIFICATION)
     void *rs_ctx = NULL;
     int authmode;
@@ -4361,7 +4361,16 @@ int mbedtls_ssl_handshake_client_step( mbedtls_ssl_context *ssl )
            ret = mbedtls_ssl_parse_delayed_certificate_verify( ssl, authmode,
                                    ssl->session_negotiate->peer_cert, rs_ctx );
            if( ret != 0 )
+           {
                break;
+           }
+           /* Check the result again as a FI protection against skipping */
+           if( ret != 0 )
+           {
+               ret = MBEDTLS_ERR_PLATFORM_FAULT_DETECTED;
+               break;
+           }
+
 #endif /* MBEDTLS_SSL_DELAYED_SERVER_CERT_VERIFICATION */
 
            ret = mbedtls_ssl_write_finished( ssl );
