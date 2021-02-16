@@ -1820,6 +1820,18 @@ component_test_hardcoded_pk_type () {
     if_build_succeeded tests/ssl-opt.sh -f '^Default, DTLS$'
 }
 
+component_test_baremetal_no_tinycrypt_asm_optim () {
+    msg "build: lib+test+programs for baremetal.h + baremetal_test.h, no tinycrypt asm optimization"
+    cp configs/baremetal.h configs/baremetal_no_asm.h
+    scripts/config.pl -f configs/baremetal_no_asm.h unset MBEDTLS_OPTIMIZE_TINYCRYPT_ASM
+    BAREMETAL_CONFIG="configs/baremetal_no_asm.h" scripts/baremetal.sh --ram --build-only
+    rm configs/baremetal_no_asm.h
+
+    msg "test: baremetal.h + baremetal_test.h"
+    if_build_succeeded make test
+    if_build_succeeded tests/ssl-opt.sh
+}
+
 component_test_baremetal () {
     msg "build: lib+test+programs for baremetal.h + baremetal_test.h"
     record_status scripts/baremetal.sh --ram --build-only
