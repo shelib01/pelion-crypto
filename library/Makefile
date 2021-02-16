@@ -1,7 +1,12 @@
 
 # Also see "include/mbedtls/config.h"
 
+ifdef TEST_FAULT
+CFLAGS	?= -O2 -I../tests/data_files
+else
 CFLAGS	?= -O2
+endif
+
 WARNING_CFLAGS ?=  -Wall -W -Wdeclaration-after-statement
 LDFLAGS ?=
 
