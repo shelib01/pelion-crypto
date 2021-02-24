@@ -7414,8 +7414,8 @@ not_with_valgrind # spurious resend
 requires_config_disabled MBEDTLS_SSL_CONF_READ_TIMEOUT
 requires_config_enabled MBEDTLS_SSL_DTLS_CLIENT_PORT_REUSE
 run_test    "DTLS client reconnect from same port: reference" \
-            "$P_SRV dtls=1 exchanges=2 read_timeout=20000 hs_timeout=15000-25000" \
-            "$P_CLI dtls=1 exchanges=2 debug_level=2 hs_timeout=15000-25000" \
+            "$P_SRV dtls=1 exchanges=2 read_timeout=20000 hs_timeout=25000-35000" \
+            "$P_CLI dtls=1 exchanges=2 debug_level=2 hs_timeout=25000-35000" \
             0 \
             -C "resend" \
             -S "The operation timed out" \
@@ -7425,8 +7425,8 @@ not_with_valgrind # spurious resend
 requires_config_disabled MBEDTLS_SSL_CONF_READ_TIMEOUT
 requires_config_enabled MBEDTLS_SSL_DTLS_CLIENT_PORT_REUSE
 run_test    "DTLS client reconnect from same port: reconnect" \
-            "$P_SRV dtls=1 exchanges=2 read_timeout=20000 hs_timeout=15000-25000" \
-            "$P_CLI dtls=1 exchanges=2 debug_level=2 hs_timeout=15000-25000 reconnect_hard=1" \
+            "$P_SRV dtls=1 exchanges=2 read_timeout=20000 hs_timeout=25000-35000" \
+            "$P_CLI dtls=1 exchanges=2 debug_level=2 hs_timeout=25000-35000 reconnect_hard=1" \
             0 \
             -C "resend" \
             -S "The operation timed out" \
@@ -7436,8 +7436,8 @@ not_with_valgrind # server/client too slow to respond in time (next test has hig
 requires_config_disabled MBEDTLS_SSL_CONF_READ_TIMEOUT
 requires_config_enabled MBEDTLS_SSL_DTLS_CLIENT_PORT_REUSE
 run_test    "DTLS client reconnect from same port: reconnect, nbio, no valgrind" \
-            "$P_SRV dtls=1 exchanges=2 read_timeout=1000 nbio=2" \
-            "$P_CLI dtls=1 exchanges=2 debug_level=2 hs_timeout=500-1000 reconnect_hard=1" \
+            "$P_SRV dtls=1 exchanges=2 read_timeout=1500 nbio=2" \
+            "$P_CLI dtls=1 exchanges=2 debug_level=2 hs_timeout=1000-1500 reconnect_hard=1" \
             0 \
             -S "The operation timed out" \
             -s "Client initiated reconnection from same port"
