@@ -3,7 +3,7 @@
 # To compile with PKCS11: add "-lpkcs11-helper" to LDFLAGS
 
 ifdef TEST_FAULT
-FAULT_OBJ ?= data_files/platform_fault.o
+FAULT_OBJ ?= ../tests/data_files/platform_fault.o
 CFLAGS	?= -O2 -Idata_files
 else
 CFLAGS	?= -O2
@@ -131,7 +131,7 @@ $(BINARIES): %$(EXEXT): %.c $(DEP) $(FAULT_OBJ)
 	echo "  CC    $<"
 	$(CC) $(LOCAL_CFLAGS) $(CFLAGS) $(FAULT_OBJ) $<	$(LOCAL_LDFLAGS) $(LDFLAGS) -o $@
 
-data_files/platform_fault.o: data_files/platform_fault.c
+../tests/data_files/platform_fault.o: data_files/platform_fault.c
 	echo "  CC    $<"
 	$(CC) $(LOCAL_CFLAGS) $(CFLAGS) -c $< -o $@
 

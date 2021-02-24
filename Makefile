@@ -5,6 +5,12 @@ PREFIX=mbedtls_
 PROGRAMS_DIR=./programs
 TESTS_DIR=./tests
 
+ifdef TEST_FAULT
+FAULT_OBJ ?= tests/data_files/platform_fault.o
+else
+FAULT_OBJ ?=
+endif
+
 # Check test environment. If ../library is available then Mbed TLS is used.
 # Otherwise Mbed OS environment is used.
 DIR_FOR_MBED_TLS_ENV=./library
@@ -27,14 +33,17 @@ all: programs tests
 
 no_test: programs
 
-programs: lib
+programs: lib $(FAULT_OBJ)
 	$(MAKE) -C $(PROGRAMS_DIR)
 
 lib:
 	$(MAKE) -C $(LIBRARY_DIR)
 
-tests: lib
+tests: lib $(FAULT_OBJ)
 	$(MAKE) -C $(TESTS_DIR)
+
+tests/data_files/platform_fault.o:
+	$(MAKE) -C tests ../tests/data_files/platform_fault.o
 
 ifndef WINDOWS
 install: no_test

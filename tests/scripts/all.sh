@@ -1867,7 +1867,7 @@ component_test_platform_fault_ood () {
     cp -rf ./tests/data_files/platform_fault.* ./ood_platform_fault
 
     msg "build: default config + platform fault out of directory"
-    make TEST_FAULT=1 FAULT_OBJ="../ood_platform_fault/platform_fault.o" PROG_FAULT_OBJ="../ood_platform_fault/platform_fault.o" CFLAGS="-I$(pwd)/ood_platform_fault"
+    make TEST_FAULT=1 FAULT_OBJ="$(pwd)/ood_platform_fault/platform_fault.o" CFLAGS="-I$(pwd)/ood_platform_fault"
 
     msg "test: default config + platform fault out of directory"
     if_build_succeeded make test
