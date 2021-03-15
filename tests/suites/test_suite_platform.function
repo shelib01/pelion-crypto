@@ -1,0 +1,23 @@
+/* BEGIN_HEADER */
+
+/* This test module exercises the platform module. */
+#include "mbedtls/platform_util.h"
+
+#if defined(MBEDTLS_PLATFORM_FAULT_CALLBACKS)
+#include "data_files/platform_fault.h"
+#endif
+
+/* END_HEADER */
+
+/* BEGIN_DEPENDENCIES
+ * depends_on:MBEDTLS_PLATFORM_FAULT_CALLBACKS
+ * END_DEPENDENCIES
+ */
+
+/* BEGIN_CASE depends_on:MBEDTLS_PLATFORM_FAULT_CALLBACKS */
+void platform_fault( )
+{
+    mbedtls_platform_fault();
+    TEST_ASSERT( fault_encountered == 1 );
+}
+/* END_CASE */

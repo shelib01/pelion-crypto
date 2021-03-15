@@ -41,6 +41,15 @@
  */
 
 /**
+ * \def MBEDTLS_SSL_DELAYED_SERVER_CERT_VERIFICATION
+ *
+ * Enable the delayed verification of server
+ * certificates on the client side.
+ *
+ */
+//#define MBEDTLS_SSL_DELAYED_SERVER_CERT_VERIFICATION
+
+/**
  * \def MBEDTLS_HAVE_ASM
  *
  * The compiler has support for asm().
@@ -1593,6 +1602,39 @@
 #define MBEDTLS_SSL_KEEP_PEER_CERTIFICATE
 
 /**
+ * \def MBEDTLS_SSL_FREE_SERVER_CERTIFICATE
+ *
+ * This option controls determines whether the server certificate is discarded
+ * after a handshake when the MBEDTLS_SSL_KEEP_PEER_CERTIFICATE is enabled.
+ *
+ * Use of this option is useful in combined with the delayed certificate verification
+ * when the server certificate has to be kept for the duration of the handshake
+ * but not afterwards.
+ *
+ */
+//#define MBEDTLS_SSL_FREE_SERVER_CERTIFICATE
+
+
+/**
+ * \def MBEDTLS_SSL_IMMEDIATE_TRANSMISSION
+ *
+ * Force stack to immediately transmit messages.
+ *
+ * Requires: MBEDTLS_SSL_PROTO_DTLS
+ */
+//#define MBEDTLS_SSL_IMMEDIATE_TRANSMISSION
+
+/**
+ * \def MBEDTLS_SSL_EARLY_KEY_COMPUTATION
+ *
+ * Create ephemeral Diffie-Hellman key pair after
+ * the ClientHello has been successfully transmitted.
+ *
+ * Requires:
+ */
+//#define MBEDTLS_SSL_EARLY_KEY_COMPUTATION
+
+/**
  * \def MBEDTLS_SSL_HW_RECORD_ACCEL
  *
  * Enable hooking functions in SSL module for hardware acceleration of
@@ -2986,9 +3028,11 @@
 /**
  * \def MBEDTLS_PLATFORM_FAULT_CALLBACKS
  *
- * Uncomment to provide your own alternate implementation for mbedtls_platform_fault(),
- * used in library/platform_util.c to signal a fault injection in either
- * mbedtls_platform_memcpy, mbedtls_platform_memset or mbedtls_platform_random_buf.
+ * Uncomment to provide your own alternate implementation for
+ * mbedtls_platform_fault(), used in library/platform_util.c and
+ * tinycrypt/ecc.c to signal a fault injection in either
+ * mbedtls_platform_memcpy, mbedtls_platform_memset, mbedtls_platform_random_buf,
+ * or uECC_vli_mmod.
  *
  * You will need to provide a header "platform_fault.h" and an implementation at
  * compile time.

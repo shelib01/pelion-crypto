@@ -2,7 +2,14 @@
 # To compile on SunOS: add "-lsocket -lnsl" to LDFLAGS
 # To compile with PKCS11: add "-lpkcs11-helper" to LDFLAGS
 
+ifdef TEST_FAULT
+FAULT_OBJ ?= ../tests/data_files/platform_fault.o
+CFLAGS	?= -O2 -Idata_files
+else
 CFLAGS	?= -O2
+FAULT_OBJ ?=
+endif
+
 WARNING_CFLAGS ?= -Wall -W -Wdeclaration-after-statement -Wunused
 LDFLAGS ?=
 
@@ -120,15 +127,18 @@ C_FILES := $(addsuffix .c,$(APPS))
 		--helpers-file suites/helpers.function \
 		-o .
 
-
-$(BINARIES): %$(EXEXT): %.c $(DEP)
+$(BINARIES): %$(EXEXT): %.c $(DEP) $(FAULT_OBJ)
 	echo "  CC    $<"
-	$(CC) $(LOCAL_CFLAGS) $(CFLAGS) $<	$(LOCAL_LDFLAGS) $(LDFLAGS) -o $@
+	$(CC) $(LOCAL_CFLAGS) $(CFLAGS) $(FAULT_OBJ) $<	$(LOCAL_LDFLAGS) $(LDFLAGS) -o $@
 
+../tests/data_files/platform_fault.o: data_files/platform_fault.c
+	echo "  CC    $<"
+	$(CC) $(LOCAL_CFLAGS) $(CFLAGS) -c $< -o $@
 
 clean:
 ifndef WINDOWS
 	rm -rf $(BINARIES) *.c *.su *.datax TESTS
+	rm -rf data_files/platform_fault.o
 else
 	del /Q /F *.c *.su *.exe *.datax
 ifneq ($(wildcard TESTS/.*),)

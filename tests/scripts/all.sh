@@ -1820,6 +1820,18 @@ component_test_hardcoded_pk_type () {
     if_build_succeeded tests/ssl-opt.sh -f '^Default, DTLS$'
 }
 
+component_test_baremetal_no_tinycrypt_asm_optim () {
+    msg "build: lib+test+programs for baremetal.h + baremetal_test.h, no tinycrypt asm optimization"
+    cp configs/baremetal.h configs/baremetal_no_asm.h
+    scripts/config.pl -f configs/baremetal_no_asm.h unset MBEDTLS_OPTIMIZE_TINYCRYPT_ASM
+    BAREMETAL_CONFIG="configs/baremetal_no_asm.h" scripts/baremetal.sh --ram --build-only
+    rm configs/baremetal_no_asm.h
+
+    msg "test: baremetal.h + baremetal_test.h"
+    if_build_succeeded make test
+    if_build_succeeded tests/ssl-opt.sh
+}
+
 component_test_baremetal () {
     msg "build: lib+test+programs for baremetal.h + baremetal_test.h"
     record_status scripts/baremetal.sh --ram --build-only
@@ -1827,6 +1839,39 @@ component_test_baremetal () {
     msg "test: baremetal.h + baremetal_test.h"
     if_build_succeeded make test
     if_build_succeeded tests/ssl-opt.sh
+
+    # Optional parts (slow; currently broken on OS X because programs don't
+    # seem to receive signals under valgrind on OS X).
+    if [ "$MEMORY" -gt 0 ]; then
+        msg "test: ssl-opt.sh --memcheck"
+        if_build_succeeded tests/ssl-opt.sh --memcheck
+    fi
+}
+
+component_test_platform_fault () {
+    msg "build: default config + platform fault"
+    scripts/config.pl set MBEDTLS_PLATFORM_FAULT_CALLBACKS
+    make TEST_FAULT=1
+
+    msg "test: default config + platform fault"
+    if_build_succeeded make test
+}
+
+component_test_platform_fault_ood () {
+    msg "build fault object out of directory"
+    scripts/config.pl set MBEDTLS_PLATFORM_FAULT_CALLBACKS
+    cd ./tests/data_files
+    gcc -c platform_fault.c -o platform_fault.o
+    cd ../../
+    mkdir ood_platform_fault
+    cp -rf ./tests/data_files/platform_fault.* ./ood_platform_fault
+
+    msg "build: default config + platform fault out of directory"
+    make TEST_FAULT=1 FAULT_OBJ="$(pwd)/ood_platform_fault/platform_fault.o" CFLAGS="-I$(pwd)/ood_platform_fault"
+
+    msg "test: default config + platform fault out of directory"
+    if_build_succeeded make test
+    rm -rf ./ood_platform_fault
 }
 
 component_test_hardware_entropy () {

@@ -1368,6 +1368,7 @@ run_test    "SHA-256 allowed by default in client certificate" \
             0
 
 # Tests for datagram packing
+requires_config_disabled MBEDTLS_SSL_IMMEDIATE_TRANSMISSION
 run_test    "DTLS: multiple records in same datagram, client and server" \
             "$P_SRV dtls=1 dgram_packing=1 debug_level=2" \
             "$P_CLI dtls=1 dgram_packing=1 debug_level=2" \
@@ -1375,6 +1376,7 @@ run_test    "DTLS: multiple records in same datagram, client and server" \
             -c "next record in same datagram" \
             -s "next record in same datagram"
 
+requires_config_disabled MBEDTLS_SSL_IMMEDIATE_TRANSMISSION
 run_test    "DTLS: multiple records in same datagram, client only" \
             "$P_SRV dtls=1 dgram_packing=0 debug_level=2" \
             "$P_CLI dtls=1 dgram_packing=1 debug_level=2" \
@@ -1382,6 +1384,7 @@ run_test    "DTLS: multiple records in same datagram, client only" \
             -s "next record in same datagram" \
             -C "next record in same datagram"
 
+requires_config_disabled MBEDTLS_SSL_IMMEDIATE_TRANSMISSION
 run_test    "DTLS: multiple records in same datagram, server only" \
             "$P_SRV dtls=1 dgram_packing=1 debug_level=2" \
             "$P_CLI dtls=1 dgram_packing=0 debug_level=2" \
@@ -7411,8 +7414,8 @@ not_with_valgrind # spurious resend
 requires_config_disabled MBEDTLS_SSL_CONF_READ_TIMEOUT
 requires_config_enabled MBEDTLS_SSL_DTLS_CLIENT_PORT_REUSE
 run_test    "DTLS client reconnect from same port: reference" \
-            "$P_SRV dtls=1 exchanges=2 read_timeout=20000 hs_timeout=10000-20000" \
-            "$P_CLI dtls=1 exchanges=2 debug_level=2 hs_timeout=10000-20000" \
+            "$P_SRV dtls=1 exchanges=2 read_timeout=20000 hs_timeout=25000-35000" \
+            "$P_CLI dtls=1 exchanges=2 debug_level=2 hs_timeout=25000-35000" \
             0 \
             -C "resend" \
             -S "The operation timed out" \
@@ -7422,8 +7425,8 @@ not_with_valgrind # spurious resend
 requires_config_disabled MBEDTLS_SSL_CONF_READ_TIMEOUT
 requires_config_enabled MBEDTLS_SSL_DTLS_CLIENT_PORT_REUSE
 run_test    "DTLS client reconnect from same port: reconnect" \
-            "$P_SRV dtls=1 exchanges=2 read_timeout=20000 hs_timeout=10000-20000" \
-            "$P_CLI dtls=1 exchanges=2 debug_level=2 hs_timeout=10000-20000 reconnect_hard=1" \
+            "$P_SRV dtls=1 exchanges=2 read_timeout=20000 hs_timeout=25000-35000" \
+            "$P_CLI dtls=1 exchanges=2 debug_level=2 hs_timeout=25000-35000 reconnect_hard=1" \
             0 \
             -C "resend" \
             -S "The operation timed out" \
@@ -7433,8 +7436,8 @@ not_with_valgrind # server/client too slow to respond in time (next test has hig
 requires_config_disabled MBEDTLS_SSL_CONF_READ_TIMEOUT
 requires_config_enabled MBEDTLS_SSL_DTLS_CLIENT_PORT_REUSE
 run_test    "DTLS client reconnect from same port: reconnect, nbio, no valgrind" \
-            "$P_SRV dtls=1 exchanges=2 read_timeout=1000 nbio=2" \
-            "$P_CLI dtls=1 exchanges=2 debug_level=2 hs_timeout=500-1000 reconnect_hard=1" \
+            "$P_SRV dtls=1 exchanges=2 read_timeout=1500 nbio=2" \
+            "$P_CLI dtls=1 exchanges=2 debug_level=2 hs_timeout=1000-1500 reconnect_hard=1" \
             0 \
             -S "The operation timed out" \
             -s "Client initiated reconnection from same port"

@@ -70,6 +70,12 @@
 #include <string.h>
 #include "mbedtls/platform_util.h"
 
+#if defined(MBEDTLS_PLATFORM_FAULT_CALLBACKS)
+#include "platform_fault.h"
+#else
+static void mbedtls_platform_fault(){}
+#endif
+
 #if defined MBEDTLS_OPTIMIZE_TINYCRYPT_ASM
 #ifndef asm
 #define asm __asm
@@ -1167,6 +1173,12 @@ void uECC_vli_mmod(uECC_word_t *result, uECC_word_t *product,
 	wordcount_t word_shift = shift / uECC_WORD_BITS;
 	wordcount_t bit_shift = shift % uECC_WORD_BITS;
 	uECC_word_t carry = 0;
+
+	if(word_shift > NUM_ECC_WORDS)
+	{
+		mbedtls_platform_fault();
+	}
+
 	uECC_vli_clear(mod_multiple);
 	if (bit_shift > 0) {
 		for(index = 0; index < (uECC_word_t)num_words; ++index) {
@@ -1610,16 +1622,16 @@ static void EccPoint_mult(uECC_word_t * result, const uECC_word_t * point,
 static uECC_word_t regularize_k(const uECC_word_t * const k, uECC_word_t *k0,
 			 uECC_word_t *k1)
 {
-	wordcount_t num_n_words = NUM_ECC_WORDS;	
+	wordcount_t num_n_words = NUM_ECC_WORDS;
 	bitcount_t num_n_bits = NUM_ECC_BITS;
 
 	/* With our constant NUM_ECC_BITS and NUM_ECC_WORDS the
 	 * check (num_n_bits < ((bitcount_t)num_n_words * uECC_WORD_SIZE * 8) always would have "false" result (256 < 256),
-	 * therefore Coverity warning may be detected. Removing of this line without changing the entire check will cause to 
+	 * therefore Coverity warning may be detected. Removing of this line without changing the entire check will cause to
 	 * array overrun.
 	 * The entire check is not changed on purpose  to be aligned with original tinycrypt
 	 * implementation and to allow upstreaming to other curves if required.
-	 * Coverity specific annotation may be added to silence warning if exists.    
+	 * Coverity specific annotation may be added to silence warning if exists.
 	*/
 	uECC_word_t carry = uECC_vli_add(k0, k, curve_n) ||
 			     (num_n_bits < ((bitcount_t)num_n_words * uECC_WORD_SIZE * 8) &&
